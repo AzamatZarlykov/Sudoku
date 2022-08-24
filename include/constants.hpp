@@ -1,5 +1,8 @@
 #pragma once
 
+#include "SDL.h"
+
+
 /* puzzle grid dimensions */
 const int SIZE = 9;
 
@@ -16,8 +19,8 @@ const int FOR_MEDIUM = 33;
 const int FOR_HARD = 49;
 
 /* window size */
-const int WIDTH = 1000;
-const int HEIGHT = 700;
+const int WIDTH = 935;
+const int HEIGHT = 795;
 
 /* Define Sudoku grid dimensions */
 const int mGridHeight = 680;
@@ -25,3 +28,9 @@ const int mGridWidth = 680;
 
 /* font */
 const int FONT_SIZE = 30;
+
+const int GRID_WIDTH = 710;
+
+// Define thick and thin borders
+const int THIN_B = 2;
+const int THICK_B = THIN_B + 6;

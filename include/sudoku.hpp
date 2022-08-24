@@ -5,6 +5,13 @@
 
 using namespace std;
 
+struct Pos
+{
+	int x;
+	int y;
+};
+
+
 class Sudoku {
 public:
 	Sudoku();
@@ -16,17 +23,13 @@ private:
 	Level level = Level::EASY;
 	// sudoku grid
 	vector<vector<Cell>> grid;
-	// buttons: Check, Next, Hint
-	Button check;
-	Button next;
-	Button hint;
 
-	SDL_Texture* texture_cache[14];
+	Pos selected = {-1, -1};
 
 	// unique_ptr<Parser> parser;
 	unique_ptr<Generator> generator;
 	unique_ptr<View> view;
 
+	void set_selected_cell();
 	void print_grid() const;
-	void create_interface_layout();
 };

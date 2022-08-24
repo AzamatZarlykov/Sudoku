@@ -4,7 +4,6 @@
 #include <memory>
 #include <iostream>
 
-#include "constants.hpp"
 #include "level.hpp"
 #include "cell.hpp"
 
