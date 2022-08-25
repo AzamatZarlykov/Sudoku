@@ -25,8 +25,10 @@ public:
 	int get_solution() const;
 	bool get_editable() const;
 
+	void handle_keyboard_event(const SDL_Event*, SDL_Texture*[]);
+
 	//valid number
-	bool check() const;
+	bool is_correct() const;
 private:
 	/* CELL RELATED*/
 	bool isEditable;

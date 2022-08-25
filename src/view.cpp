@@ -25,9 +25,9 @@ View::View()
 
 	SDL_SetWindowTitle(_window, "Sudoku");
 
-	for (int i = 0; i < 5; i++) {
-		buttons.push_back(make_unique<Button>());
-	}
+	//for (int i = 0; i < 10; i++) {
+	//	num_texture.push_back(make_unique<SDL_Texture>());
+	//}
 }
 
 View::~View()
@@ -58,6 +58,10 @@ View::~View()
 	TTF_Quit();
 }
 
+SDL_Texture** View::get_number_textures()
+{
+	return num_texture;
+}
 
 void View::load_texture(SDL_Texture*& texture, const char* text, SDL_Color& font_color)
 {
@@ -72,7 +76,7 @@ void View::load_texture(SDL_Texture*& texture, const char* text, SDL_Color& font
 
 
 
-void View::prepare_texture()
+void View::prepare_texture(vector<unique_ptr<Button>>& buttons)
 {
 	// Set background color 
 	SDL_Color font_color = { 0, 0, 0, SDL_ALPHA_OPAQUE }; // black
@@ -86,9 +90,15 @@ void View::prepare_texture()
 	}
 
 	// load textures for buttons
-	const char* button_names[5] = { "Check", "Hint", "Save", "Next", "Solve"};
 	for (int i = 0; i < buttons.size(); i++) {
-		load_texture(buttons_texture[i], button_names[i], font_color);
+		load_texture(buttons_texture[i], buttons[i]->get_name(), font_color);
+	}
+	load_texture(buttons_texture[5], "Load", font_color);
+
+	const char* outcomes[2] = {"Correct!", "Wrong!"};
+	// load results texture
+	for (int i = 0; i < 2; i++) {
+		load_texture(result_texture[i], outcomes[i], font_color);
 	}
 }
 
@@ -147,7 +157,8 @@ void View::prepare_grid(vector<vector<Cell>>& grid, int& row, int& col, int& b_w
 	col += b_width + THICK_B;
 }
 
-void View::prepare_buttons(int& row, int& col, int& b_width, int& b_height)
+void View::prepare_buttons(int& row, int& col, int& b_width, int& b_height, 
+	vector<unique_ptr<Button>>& buttons)
 {
 	for (int i = 0; i < buttons.size(); i++) {
 		buttons[i]->set_texture(buttons_texture[i]);
@@ -166,10 +177,10 @@ void View::prepare_buttons(int& row, int& col, int& b_width, int& b_height)
 
 
 
-void View::create_interface_layout(vector<vector<Cell>>& grid)
+void View::create_interface_layout(vector<vector<Cell>>& grid, vector<unique_ptr<Button>>& buttons)
 {
 	// pre load the texture
-	prepare_texture();
+	prepare_texture(buttons);
 
 	int start_row = 0;
 	int start_col = 0;
@@ -180,7 +191,7 @@ void View::create_interface_layout(vector<vector<Cell>>& grid)
 	prepare_stopwatch(start_row, start_col, b_width, b_height);
 	prepare_grid(grid, start_row, start_col, b_width, b_height);
 	// right side
-	prepare_buttons(start_row, start_col, b_width, b_height);
+	prepare_buttons(start_row, start_col, b_width, b_height, buttons);
 
 	// set grid texture
 	for (int row = 0; row < SIZE; row++) {
@@ -191,10 +202,6 @@ void View::create_interface_layout(vector<vector<Cell>>& grid)
 		}
 	}
 }
-
-
-
-
 
 
 void View::render_grid(vector<vector<Cell>>& grid)
@@ -208,12 +215,23 @@ void View::render_grid(vector<vector<Cell>>& grid)
 	}
 }
 
-void View::render_stopwatch(time_t& start_timer)
+void View::render_stopwatch(time_t& start_timer, bool& solved)
 {
+	time_t difference = 0;
 	// Calculate stopwatch
-	time_t difference = time(NULL) - start_timer;
+	if (solved) {
+		finish_time = time(NULL) - start_timer;
+		solved = false;
+	}
+	difference = time(NULL) - start_timer;
+	
 	tm formatted_time;
-	localtime_s(&formatted_time, &difference);
+	if (finish_time != 0) {
+		localtime_s(&formatted_time, &finish_time);
+	}
+	else {
+		localtime_s(&formatted_time, &difference);
+	}
 
 	if (formatted_time.tm_hour != 0) {
 		formatted_time.tm_hour = 0;
@@ -235,7 +253,7 @@ void View::render_stopwatch(time_t& start_timer)
 	timer_texture = nullptr;
 }
 
-void View::render_buttons()
+void View::render_buttons(vector<unique_ptr<Button>>& buttons)
 {
 	for (int i = 0; i < buttons.size(); i++) {
 		buttons[i]->render_button(_renderer);
@@ -244,7 +262,8 @@ void View::render_buttons()
 	}
 }
 
-void View::render(vector<vector<Cell>>& grid, time_t start_timer)
+void View::render(vector<vector<Cell>>& grid, vector<unique_ptr<Button>>& buttons, time_t start_timer,
+	bool& solved)
 {
 	// Select the color for drawing. It is set to black here.
 	SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
@@ -252,10 +271,53 @@ void View::render(vector<vector<Cell>>& grid, time_t start_timer)
 	SDL_RenderClear(_renderer);
 
 	render_grid(grid);
-
-	render_stopwatch(start_timer);
-
-	render_buttons();
+	
+	render_stopwatch(start_timer, solved);
+	
+	render_buttons(buttons);
 
 	SDL_RenderPresent(_renderer);
+}
+
+
+void View::display_success(unique_ptr<Button>& button)
+{
+	// Set colour to green
+	SDL_Color colour = { 91, 191, 116, SDL_ALPHA_OPAQUE };
+
+	// Set render colour to green
+	SDL_SetRenderDrawColor(_renderer, colour.r, colour.g, colour.b, SDL_ALPHA_OPAQUE);
+
+	// Set texture to "Correct!"
+	button->set_texture(result_texture[0]);
+
+	// Set mouse down colour to green
+	button->set_mousedown_color(colour);
+}
+
+void View::display_failure(unique_ptr<Button>& button)
+{
+	// Set colour to red
+	SDL_Color colour = { 200, 73, 46, SDL_ALPHA_OPAQUE };
+
+	// Set render colour to red
+	SDL_SetRenderDrawColor(_renderer, colour.r, colour.g, colour.b, SDL_ALPHA_OPAQUE);
+
+	// Set texture to "Wrong!"
+	button->set_texture(result_texture[1]);
+
+	// Set mouse down colour to red
+	button->set_mousedown_color(colour);
+}
+
+void View::set_default_check_button(unique_ptr<Button>& button)
+{
+	// Set texture to "Check"
+	button->set_texture(buttons_texture[0]);
+
+	// set color to black 
+	SDL_Color colour = { 0, 255, 0, SDL_ALPHA_OPAQUE };
+
+	// Set render colour to black
+	SDL_SetRenderDrawColor(_renderer, colour.r, colour.g, colour.b, colour.a);
 }

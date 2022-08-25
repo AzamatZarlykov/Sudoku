@@ -14,7 +14,7 @@ const int FROM = 1;
 const int TO = 9;
 
 /* number of hints */
-const int FOR_EASY = 17;
+const int FOR_EASY = 1; //17
 const int FOR_MEDIUM = 33;
 const int FOR_HARD = 49;
 
@@ -34,3 +34,6 @@ const int GRID_WIDTH = 710;
 // Define thick and thin borders
 const int THIN_B = 2;
 const int THICK_B = THIN_B + 6;
+
+/* seconds to display a message */
+const int DISPLAY_TIME = 2;
