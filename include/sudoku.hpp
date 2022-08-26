@@ -39,11 +39,18 @@ private:
 	unique_ptr<Button> load;
 
 	bool check_grid(bool&) const;
+	void initialize_grid(vector<vector<Cell>>&);
 
-	void handle_buttons_selection(bool&, bool&, time_t&, time_t&, bool&);
+	void handle_buttons_selection(bool&, bool&, time_t&, time_t&);
 	void check_buttons_selection(const SDL_Event*, bool&);
 	void check_cell_selection(const SDL_Event*);
 	void set_selected_cell();
+
+	void handle_check_button(bool&, time_t&, time_t&);
+	void handle_next_button(bool&, time_t&);
+	void handle_solve_button();
+
+	void repopulate_grid(vector<vector<Cell>>&);
 
 	void print_grid() const;
 };

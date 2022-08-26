@@ -22,8 +22,8 @@ void Cell::set_editable(const bool e)
 
 void Cell::set_noneditable_square(const int val) 
 {
-	number = char(val);
-	solution = char(val);
+	number = val;
+	solution = val;
 
 	MOUSEOUTCOLOR = { 160, 160, 160, SDL_ALPHA_OPAQUE }; // purple
 	MOUSEOVERMOTIONCOLOR = { 160, 160, 160, SDL_ALPHA_OPAQUE }; // purple

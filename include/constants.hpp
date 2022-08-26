@@ -14,7 +14,7 @@ const int FROM = 1;
 const int TO = 9;
 
 /* number of hints */
-const int FOR_EASY = 1; //17
+const int FOR_EASY = 17;
 const int FOR_MEDIUM = 33;
 const int FOR_HARD = 49;
 

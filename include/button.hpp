@@ -53,14 +53,6 @@ private:
 	SDL_Rect button_rect;
 	SDL_Rect texture_rect;
 
-	/* Colors */
-	//MOUSEOUTCOLOR = { 255, 255, 255, SDL_ALPHA_OPAQUE };
-	//MOUSEOVERMOTIONCOLOR = { 204, 229, 255, SDL_ALPHA_OPAQUE };
-	//MOUSEDOWNCOLOR = { 102, 178, 255, SDL_ALPHA_OPAQUE };
-	//MOUSEUPCOLOR = { 180, 214, 255, SDL_ALPHA_OPAQUE };
-
-
-
 	bool any_mouse_actions(const SDL_Event* event) const;
 	bool inside_button(const int, const int) const;
 

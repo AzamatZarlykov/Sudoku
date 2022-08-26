@@ -24,10 +24,6 @@ View::View()
 	CHECKFORERROR(_font == NULL, TTF_GetError());
 
 	SDL_SetWindowTitle(_window, "Sudoku");
-
-	//for (int i = 0; i < 10; i++) {
-	//	num_texture.push_back(make_unique<SDL_Texture>());
-	//}
 }
 
 View::~View()
@@ -174,7 +170,11 @@ void View::prepare_buttons(int& row, int& col, int& b_width, int& b_height,
 }
 
 
-
+void View::load_cell_texture(Cell& cell, int val)
+{
+	cell.set_texture(num_texture[val]);
+	cell.center_val();
+}
 
 
 void View::create_interface_layout(vector<vector<Cell>>& grid, vector<unique_ptr<Button>>& buttons)
@@ -197,8 +197,7 @@ void View::create_interface_layout(vector<vector<Cell>>& grid, vector<unique_ptr
 	for (int row = 0; row < SIZE; row++) {
 		for (int col = 0; col < SIZE; col++) {
 			int val = grid[row][col].get_number();
-			grid[row][col].set_texture(num_texture[val]);
-			grid[row][col].center_val();
+			load_cell_texture(grid[row][col], val);
 		}
 	}
 }
@@ -215,14 +214,9 @@ void View::render_grid(vector<vector<Cell>>& grid)
 	}
 }
 
-void View::render_stopwatch(time_t& start_timer, bool& solved)
+void View::render_stopwatch(time_t& start_timer)
 {
 	time_t difference = 0;
-	// Calculate stopwatch
-	if (solved) {
-		finish_time = time(NULL) - start_timer;
-		solved = false;
-	}
 	difference = time(NULL) - start_timer;
 	
 	tm formatted_time;
@@ -262,8 +256,7 @@ void View::render_buttons(vector<unique_ptr<Button>>& buttons)
 	}
 }
 
-void View::render(vector<vector<Cell>>& grid, vector<unique_ptr<Button>>& buttons, time_t start_timer,
-	bool& solved)
+void View::render(vector<vector<Cell>>& grid, vector<unique_ptr<Button>>& buttons, time_t& start_timer)
 {
 	// Select the color for drawing. It is set to black here.
 	SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
@@ -272,7 +265,7 @@ void View::render(vector<vector<Cell>>& grid, vector<unique_ptr<Button>>& button
 
 	render_grid(grid);
 	
-	render_stopwatch(start_timer, solved);
+	render_stopwatch(start_timer);
 	
 	render_buttons(buttons);
 
@@ -310,14 +303,39 @@ void View::display_failure(unique_ptr<Button>& button)
 	button->set_mousedown_color(colour);
 }
 
+void View::reset_check_button(unique_ptr<Button>& button)
+{
+	SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
+
+	button->set_texture(buttons_texture[0]);
+
+	SDL_Color color = { 255,255,255, SDL_ALPHA_OPAQUE };
+	button->set_mousedown_color(color);
+}
+
 void View::set_default_check_button(unique_ptr<Button>& button)
 {
 	// Set texture to "Check"
 	button->set_texture(buttons_texture[0]);
 
 	// set color to black 
-	SDL_Color colour = { 0, 255, 0, SDL_ALPHA_OPAQUE };
+	SDL_Color colour = { 0, 0, 0, SDL_ALPHA_OPAQUE };
 
 	// Set render colour to black
 	SDL_SetRenderDrawColor(_renderer, colour.r, colour.g, colour.b, colour.a);
+}
+
+const time_t& View::get_finish_time() const
+{
+	return finish_time;
+}
+
+void View::reset_finish_time()
+{
+	finish_time = 0;
+}
+
+void View::set_finish_time(time_t& start_timer)
+{
+	finish_time = time(NULL) - start_timer;
 }
