@@ -18,18 +18,23 @@ public:
 	View();
 	~View();
 
-	void render(vector<vector<Cell>>&, vector<unique_ptr<Button>>&, time_t&);
-	void create_interface_layout(vector<vector<Cell>>&, vector<unique_ptr<Button>>&);
+	void render_game(vector<vector<Cell>>&, vector<unique_ptr<Button>>&, time_t&);
+	void render_menu(vector<unique_ptr<Button>>&);
+	void render_complexity(vector<unique_ptr<Button>>&);
+
+	void create_interface_layout(vector<vector<Cell>>&, vector<unique_ptr<Button>>&,
+		vector<unique_ptr<Button>>&, vector<unique_ptr<Button>>&);
+
 	void load_texture(SDL_Texture*&, const char*, SDL_Color&);
 	void load_cell_texture(Cell&, int);
 
-	void display_success(unique_ptr<Button>&);
-	void display_failure(unique_ptr<Button>&);
-	void reset_check_button(unique_ptr<Button>&);
+	void display_message(unique_ptr<Button>&, int);
+	void set_default_texture(unique_ptr<Button>&, int);
 
-	void set_default_check_button(unique_ptr<Button>&);
 	void set_finish_time(time_t&);
 	void reset_finish_time();
+
+	void reset_button_textures(vector<unique_ptr<Button>>&);
 
 	const time_t& get_finish_time() const;
 
@@ -40,8 +45,10 @@ private:
 	TTF_Font* _font;
 
 	SDL_Texture* num_texture[10];
-	SDL_Texture* buttons_texture[6];
-	SDL_Texture* result_texture[2];
+	SDL_Texture* game_buttons_texture[6];
+	SDL_Texture* menu_buttons_texture[6];
+	SDL_Texture* complexity_buttons_texture[6];
+	SDL_Texture* result_texture[3];
 
 	// Stopwatch
 	Button timer;
@@ -51,15 +58,17 @@ private:
 
 	void CHECKFORERROR(bool, string);
 
+	void render_title();
 	void render_grid(vector<vector<Cell>>&);
 	void render_stopwatch(time_t&);
 	void render_buttons(vector<unique_ptr<Button>>&);
+	void render_button(unique_ptr<Button>&);
 
 	void prepare_stopwatch(int&, int&, int&, int&);
 	void prepare_grid(vector<vector<Cell>>&, int&, int&, int&, int&);
-	void prepare_buttons(int&, int&, int&, int&, vector<unique_ptr<Button>>&);
-	void prepare_texture(vector<unique_ptr<Button>>&);
-
-	
+	void prepare_game_buttons(int&, int&, int&, int&, vector<unique_ptr<Button>>&);
+	void prepare_menu_buttons(vector<unique_ptr<Button>>&);
+	void prepare_texture(vector<unique_ptr<Button>>&, vector<unique_ptr<Button>>&, 
+		vector<unique_ptr<Button>>&);
 };
 

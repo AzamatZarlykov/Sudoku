@@ -2,7 +2,6 @@
 
 #include "SDL.h"
 
-
 /* puzzle grid dimensions */
 const int SIZE = 9;
 

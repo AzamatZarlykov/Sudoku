@@ -1,9 +1,17 @@
 #pragma once
 
+#include <filesystem>
+
 #include "generator.hpp"
 #include "view.hpp"
+#include "writer.hpp"
+#include "reader.hpp"
 
 using namespace std;
+
+enum class GameState {
+	MENU, COMPLEXITY, GAME
+};
 
 struct Pos
 {
@@ -11,44 +19,58 @@ struct Pos
 	int y;
 };
 
-
 class Sudoku {
 public:
 	Sudoku();
-
 	int play();
-
 private:
 	Pos selected = { -1, -1 };
 
+	GameState gs = GameState::MENU;
 	// defaut level
 	Level level = Level::EASY;
 	// sudoku grid
 	vector<vector<Cell>> grid;
 
+	// stopwatch
+	time_t current_timer = 0;
 
 	// unique_ptr<Parser> parser;
 	unique_ptr<Generator> generator;
 	unique_ptr<View> view;
+	
+	//writer and reader
+	unique_ptr<Writer> writer;
+	unique_ptr<Reader> reader;
 
-	// buttons: Check, Hint, Save, Next, Solve
-	const char* button_names[5] = { "Check", "Hint", "Save", "Next", "Solve" };
-	bool bool_buttons[5] = { false, false, false, false, false };
-	vector<unique_ptr<Button>> buttons;
-	// Load button separate(only menu)
-	unique_ptr<Button> load;
+	bool any_button_pressed = false;
+	bool bool_game_buttons[5] = { false, false, false, false, false };
+	bool bool_menu_buttons[2] = { false, false };
+	bool bool_complexity_buttons[3] = { false, false, false };
+
+	vector<unique_ptr<Button>> game_buttons;
+	vector<unique_ptr<Button>> menu_buttons;
+	vector<unique_ptr<Button>> complexity_buttons;
+	const char* game_button_names[5] = { "Check", "Hint", "Save", "Next", "Solve" };
+	const char* menu_button_names[2] = { "Start", "Load" };
+	const char* complexity_names[3] = { "Easy", "Medium","Difficult" };
+
+	void initialize_buttons();
 
 	bool check_grid(bool&) const;
 	void initialize_grid(vector<vector<Cell>>&);
 
-	void handle_buttons_selection(bool&, bool&, time_t&, time_t&);
+	void handle_buttons_selection(bool&, bool&, bool&, time_t&, time_t&);
 	void check_buttons_selection(const SDL_Event*, bool&);
 	void check_cell_selection(const SDL_Event*);
 	void set_selected_cell();
 
-	void handle_check_button(bool&, time_t&, time_t&);
-	void handle_next_button(bool&, time_t&);
+	void handle_check_button(bool&, time_t&);
+	void handle_next_button(bool&);
 	void handle_solve_button();
+	void handle_hint_button();
+	void handle_save_button(bool&, time_t&);
+	void handle_load_button();
 
 	void repopulate_grid(vector<vector<Cell>>&);
 

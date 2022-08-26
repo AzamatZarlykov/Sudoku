@@ -77,6 +77,7 @@ void Cell::handle_keyboard_event(const SDL_Event* event, SDL_Texture* num_textur
 	// Handle text input
 	else if (event->type == SDL_TEXTINPUT)
 	{
+		cout << atoi(event->text.text) << endl;
 		// Check if integer > 0
 		if (atoi(event->text.text))
 		{

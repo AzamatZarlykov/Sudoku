@@ -146,8 +146,10 @@
     <ClCompile Include="src\cell.cpp" />
     <ClCompile Include="src\generator.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\reader.cpp" />
     <ClCompile Include="src\sudoku.cpp" />
     <ClCompile Include="src\view.cpp" />
+    <ClCompile Include="src\writer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\button.hpp" />
@@ -155,8 +157,10 @@
     <ClInclude Include="include\constants.hpp" />
     <ClInclude Include="include\generator.hpp" />
     <ClInclude Include="include\level.hpp" />
+    <ClInclude Include="include\reader.hpp" />
     <ClInclude Include="include\sudoku.hpp" />
     <ClInclude Include="include\view.hpp" />
+    <ClInclude Include="include\writer.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
