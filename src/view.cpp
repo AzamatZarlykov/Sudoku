@@ -18,7 +18,14 @@ View::View()
 	CHECKFORERROR(_window == NULL, SDL_GetError());
 	CHECKFORERROR(_renderer == NULL, SDL_GetError());
 
-	/* initialize font */
+	/* initialize font for title*/
+	CHECKFORERROR(TTF_Init() == -1, TTF_GetError());
+	_font = TTF_OpenFont("./font/font.ttf", TITLE_FONT_SIZE);
+	CHECKFORERROR(_font == NULL, TTF_GetError());
+
+	load_texture(title_texture, title_text, color_white);
+
+	/* initialize default font*/
 	CHECKFORERROR(TTF_Init() == -1, TTF_GetError());
 	_font = TTF_OpenFont("./font/font.ttf", FONT_SIZE);
 	CHECKFORERROR(_font == NULL, TTF_GetError());
@@ -61,6 +68,9 @@ SDL_Texture** View::get_number_textures()
 
 void View::load_texture(SDL_Texture*& texture, const char* text, SDL_Color& font_color)
 {
+	if (text == "S U D O K U") {
+		cout << "initialized" << endl;
+	}
 	SDL_Surface * text_surface = TTF_RenderText_Solid(_font, text, font_color);
 	CHECKFORERROR(text_surface == NULL, SDL_GetError());
 
@@ -70,44 +80,44 @@ void View::load_texture(SDL_Texture*& texture, const char* text, SDL_Color& font
 	SDL_FreeSurface(text_surface);
 }
 
-
-
-void View::prepare_texture(vector<unique_ptr<Button>>& g_buttons, 
-	vector<unique_ptr<Button>>& m_buttons, vector<unique_ptr<Button>>& c_buttons)
+void View::prepare_menu_texture(vector<unique_ptr<Button>>& buttons)
 {
-	// Set background color 
-	SDL_Color font_color = { 0, 0, 0, SDL_ALPHA_OPAQUE }; // black
+	// load texture for menu buttons
+	for (int i = 0; i < buttons.size(); i++) {
+		load_texture(menu_buttons_texture[i], buttons[i]->get_name(), color_black);
+	}
+}
 
+void View::prepare_complexity_texture(vector<unique_ptr<Button>>& c_buttons)
+{
+	// load texture for complexity buttons
+	for (int i = 0; i < c_buttons.size(); i++) {
+		load_texture(complexity_buttons_texture[i], c_buttons[i]->get_name(), color_black);
+	}
+}
+
+void View::prepare_game_texture(vector<unique_ptr<Button>>& g_buttons)
+{
 	// texture for space
-	load_texture(num_texture[0], " ", font_color);
+	load_texture(num_texture[0], " ", color_black);
 	// load possible textures: 1-9 and space
 	for (int i = 1; i < 10; i++) {
 		const char val[] = { '0' + i, '\0' };;
-		load_texture(num_texture[i], val, font_color);
+		load_texture(num_texture[i], val, color_black);
 	}
 
 	// load textures for game buttons
 	for (int i = 0; i < g_buttons.size(); i++) {
-		load_texture(game_buttons_texture[i], g_buttons[i]->get_name(), font_color);
-	}
-	// load texture for menu buttons
-	for (int i = 0; i < m_buttons.size(); i++) {
-		load_texture(menu_buttons_texture[i], m_buttons[i]->get_name(), font_color);
-	}
-	// load texture for complexity buttons
-	for (int i = 0; i < c_buttons.size(); i++) {
-		load_texture(complexity_buttons_texture[i], c_buttons[i]->get_name(), font_color);
+		load_texture(game_buttons_texture[i], g_buttons[i]->get_name(), color_black);
 	}
 
 	const char* outcomes[3] = {"Correct!", "Wrong!", "Saved!"};
 	// load results texture
 	for (int i = 0; i < 3; i++) {
-		load_texture(result_texture[i], outcomes[i], font_color);
+		load_texture(result_texture[i], outcomes[i], color_black);
+
 	}
 }
-
-
-
 
 void View::prepare_stopwatch(int& row, int& col, int& b_width,
 	int& b_height)
@@ -185,10 +195,28 @@ void View::prepare_menu_buttons(vector<unique_ptr<Button>>& buttons)
 	}
 
 	int b_width = WIDTH / 3 - 11;
-	int b_height = HEIGHT / 3;
+	int b_height = HEIGHT / 6;
 
-	int xs[2] = { b_width - b_width / 2 ,  2 * b_width - b_width / 2 };
-	int y = HEIGHT / 2 - HEIGHT / 4;
+	int xs[2] = { b_width - b_width / 2 ,  2 * b_width - 125 };
+	int y = HEIGHT / 2 + 50;
+	for (int i = 0; i < buttons.size(); i++) {
+		SDL_Rect rect = { xs[i], y, b_width, b_height };
+		buttons[i]->set_button_rect(rect);
+	}
+}
+
+void View::prepare_complexity_buttons(vector<unique_ptr<Button>>& buttons)
+{
+	for (int i = 0; i < buttons.size(); i++) {
+		buttons[i]->set_texture(complexity_buttons_texture[i]);
+	}
+
+	int b_width = WIDTH / 4;
+	int b_height = HEIGHT / 6;
+
+	int xs[3] = { WIDTH / 4 - b_width / 2, WIDTH / 2 - b_width / 2, WIDTH / 2 + b_width / 2 + 2 };
+	int y = HEIGHT / 2 + 50;
+
 	for (int i = 0; i < buttons.size(); i++) {
 		SDL_Rect rect = { xs[i], y, b_width, b_height };
 		buttons[i]->set_button_rect(rect);
@@ -202,12 +230,22 @@ void View::load_cell_texture(Cell& cell, int val)
 	cell.center_val();
 }
 
+void View::create_complexity_interface_layout(vector<unique_ptr<Button>>& buttons)
+{
+	prepare_complexity_texture(buttons);
+	prepare_complexity_buttons(buttons);
+}
 
-void View::create_interface_layout(vector<vector<Cell>>& grid, vector<unique_ptr<Button>>& g_buttons,
-	vector<unique_ptr<Button>>& m_buttons, vector<unique_ptr<Button>>& c_buttons)
+void View::create_menu_interface_layout(vector<unique_ptr<Button>>& buttons)
+{
+	prepare_menu_texture(buttons);
+	prepare_menu_buttons(buttons);
+}
+
+void View::create_game_interface_layout(vector<vector<Cell>>& grid, vector<unique_ptr<Button>>& g_buttons)
 {
 	// pre load the texture
-	prepare_texture(g_buttons, m_buttons, c_buttons);
+	prepare_game_texture(g_buttons);
 
 	int start_row = 0;
 	int start_col = 0;
@@ -217,8 +255,6 @@ void View::create_interface_layout(vector<vector<Cell>>& grid, vector<unique_ptr
 	prepare_stopwatch(start_row, start_col, b_width, b_height);
 	prepare_grid(grid, start_row, start_col, b_width, b_height);
 	prepare_game_buttons(start_row, start_col, b_width, b_height, g_buttons);
-	
-	prepare_menu_buttons(m_buttons);
 
 	// set grid texture
 	for (int row = 0; row < SIZE; row++) {
@@ -262,8 +298,7 @@ void View::render_stopwatch(time_t& start_timer)
 	strftime(t, sizeof(t), "%H:%M:%S", &formatted_time);
 
 	SDL_Texture* timer_texture = nullptr;
-	SDL_Color font_color = { 0, 0, 0, SDL_ALPHA_OPAQUE }; // black
-	load_texture(timer_texture, t, font_color);
+	load_texture(timer_texture, t, color_black);
 
 	timer.set_texture(timer_texture);
 	timer.render_button(_renderer);
@@ -325,11 +360,8 @@ void View::set_default_texture(unique_ptr<Button>& button, int texture)
 	// Set texture to "Check"
 	button->set_texture(game_buttons_texture[texture]);
 
-	// set color to black 
-	SDL_Color colour = { 0, 0, 0, SDL_ALPHA_OPAQUE };
-
 	// Set render colour to black
-	SDL_SetRenderDrawColor(_renderer, colour.r, colour.g, colour.b, colour.a);
+	SDL_SetRenderDrawColor(_renderer, color_black.r, color_black.g, color_black.b, color_black.a);
 }
 
 const time_t& View::get_finish_time() const
@@ -357,7 +389,16 @@ void View::reset_button_textures(vector<unique_ptr<Button>>& buttons)
 
 void View::render_title()
 {
+	// prepare rectangle
+	int b_width = GRID_WIDTH;
 
+	SDL_Rect rect = { WIDTH / 2 - b_width / 2, HEIGHT / 6, b_width, HEIGHT / 4 };
+	title.set_button_rect(rect);
+
+	title.set_texture(title_texture);
+	title.render_stopwatch(_renderer);
+	title.center_val();
+	title.render_texture(_renderer);
 }
 
 void View::render_menu(vector<unique_ptr<Button>>& buttons)
@@ -370,9 +411,18 @@ void View::render_menu(vector<unique_ptr<Button>>& buttons)
 	render_buttons(buttons);
 	// render SUDOKU text in the middle
 	render_title();
+	SDL_RenderPresent(_renderer);
 }
 
-void View::render_complexity(vector<unique_ptr<Button>>&)
+void View::render_complexity(vector<unique_ptr<Button>>& buttons)
 {
-
+	// Select the color for drawing. It is set to black here.
+	SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
+	// Clear screen with rendered colour
+	SDL_RenderClear(_renderer);
+	// render START and LOAD buttons
+	render_buttons(buttons);
+	// render SUDOKU text in the middle
+	render_title();
+	SDL_RenderPresent(_renderer);
 }

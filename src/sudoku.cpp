@@ -1,6 +1,6 @@
 #include "../include/sudoku.hpp"
 
-Sudoku::Sudoku() 
+Sudoku::Sudoku() : current_timer(0)
 {
 	initialize_grid(grid);
 	// initialize the buttons
@@ -69,7 +69,7 @@ void Sudoku::set_selected_cell()
 	}
 }
 
-void Sudoku::check_buttons_selection(const SDL_Event* event,bool& load_b)
+void Sudoku::check_buttons_selection(const SDL_Event* event)
 {
 	if (gs == GameState::GAME) {
 		for (int i = 0; i < game_buttons.size(); i++) {
@@ -279,10 +279,27 @@ void Sudoku::handle_save_button(bool& saved_pressed, time_t& saved_time)
 
 void Sudoku::handle_load_button()
 {
-	// reader->read(grid, current_timer);
+	cout << "Loaded" << endl;
+	// load the grid and time
+	if (!reader->read(grid, current_timer)) {
+		cout << "could not load the file" << endl;
+		exit(1);
+	}
+	print_grid();
+	// choose the first free selected cell
+	set_selected_cell();
+	// change the gamestate
+	gs = GameState::GAME;
 }
 
-void Sudoku::handle_buttons_selection(bool& load_b, bool& check_pressed, bool& saved_pressed,
+void Sudoku::handle_start_button()
+{
+	gs = GameState::COMPLEXITY;
+	view->create_complexity_interface_layout(complexity_buttons);
+
+}
+
+void Sudoku::handle_buttons_selection(bool& check_pressed, bool& saved_pressed,
 	time_t& check_time, time_t& saved_time)
 {
 	// Check
@@ -310,22 +327,41 @@ void Sudoku::handle_buttons_selection(bool& load_b, bool& check_pressed, bool& s
 		handle_solve_button();
 		bool_game_buttons[4] = false;
 	}
+	// Start
+	else if (bool_menu_buttons[0]) {
+		handle_start_button();
+		bool_menu_buttons[0] = false;
+	}
 	// Load
-	else if (load_b) {
+	else if (bool_menu_buttons[1]) {
 		handle_load_button();
-		load_b = false;
+		bool_menu_buttons[1] = false;
+	}
+	// Easy
+	else if (bool_complexity_buttons[0]) {
+		level = Level::EASY;
+	}
+	// Medium
+	else if (bool_complexity_buttons[1]) {
+		level = Level::MEDIUM;
+	}
+	// Difficult
+	else if (bool_complexity_buttons[2]) {
+		level = Level::HARD;
+	}
+	
+	if (bool_complexity_buttons[0] || bool_complexity_buttons[1] || bool_complexity_buttons[2]) {
+		generator->generate(level, grid);
+		bool_complexity_buttons[0] = false;
+		bool_complexity_buttons[1] = false;
+		bool_complexity_buttons[2] = false;
 	}
 }
 
 int Sudoku::play()
 {
-	generator->generate(level, grid);
-	print_grid();
+	view->create_menu_interface_layout(menu_buttons);
 
-	// create a game interface
-	view->create_interface_layout(grid, game_buttons, menu_buttons, complexity_buttons);
-	// Set first current cell selected
-	set_selected_cell();
 
 	time_t check_time = 0;
 	time_t saved_time = 0;
@@ -337,12 +373,9 @@ int Sudoku::play()
 	bool check_pressed = false;
 	bool saved_pressed = false;
 
+	time(&current_timer);	// when user presses start the game reset the clock to 0
 	bool game_running = true;
 	while (game_running) {
-		if (gs == GameState::GAME) {
-			time(&current_timer);
-		}
-
 		// handle events that are in the queue
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) {
@@ -354,15 +387,17 @@ int Sudoku::play()
 				}
 			}
 
-			check_buttons_selection(&event, load_b);
+			check_buttons_selection(&event);
 			if (gs == GameState::GAME) {	// only in the game
 				check_cell_selection(&event);
 				grid[selected.y][selected.x].handle_keyboard_event(&event, view->get_number_textures());
 			}
 		}
 		// handle button presses
-		handle_buttons_selection(load_b, check_pressed, saved_pressed, check_time, saved_time);
+		handle_buttons_selection(check_pressed, saved_pressed, check_time, saved_time);
 		if (gs == GameState::GAME) {
+			// create game interface layout
+			view->create_game_interface_layout(grid, game_buttons);
 			view->render_game(grid, game_buttons, current_timer);
 		}
 		else if (gs == GameState::MENU) {
@@ -371,7 +406,6 @@ int Sudoku::play()
 		else {
 			view->render_complexity(complexity_buttons);
 		}
-
 		// Slow down program becuase it doesn't need to run very fast
 		SDL_Delay(10);
 	}

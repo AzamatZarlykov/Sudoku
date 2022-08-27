@@ -33,7 +33,7 @@ private:
 	vector<vector<Cell>> grid;
 
 	// stopwatch
-	time_t current_timer = 0;
+	time_t current_timer;
 
 	// unique_ptr<Parser> parser;
 	unique_ptr<Generator> generator;
@@ -60,8 +60,8 @@ private:
 	bool check_grid(bool&) const;
 	void initialize_grid(vector<vector<Cell>>&);
 
-	void handle_buttons_selection(bool&, bool&, bool&, time_t&, time_t&);
-	void check_buttons_selection(const SDL_Event*, bool&);
+	void handle_buttons_selection(bool&, bool&, time_t&, time_t&);
+	void check_buttons_selection(const SDL_Event*);
 	void check_cell_selection(const SDL_Event*);
 	void set_selected_cell();
 
@@ -71,6 +71,7 @@ private:
 	void handle_hint_button();
 	void handle_save_button(bool&, time_t&);
 	void handle_load_button();
+	void handle_start_button();
 
 	void repopulate_grid(vector<vector<Cell>>&);
 

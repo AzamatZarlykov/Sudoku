@@ -100,6 +100,12 @@ void Button::render_button(SDL_Renderer* _renderer)
 	SDL_RenderFillRect(_renderer, &button_rect);
 }
 
+void Button::render_stopwatch(SDL_Renderer* _renderer)
+{
+	SDL_SetRenderDrawColor(_renderer, TITLE.r, TITLE.g, TITLE.b, TITLE.a);
+	SDL_RenderFillRect(_renderer, &button_rect);
+}
+
 void Button::render_texture(SDL_Renderer* _renderer)
 {
 	// Set rendering space

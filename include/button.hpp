@@ -29,6 +29,7 @@ public:
 	void set_mousedown_color(const SDL_Color& colour);
 
 	void render_button(SDL_Renderer*);
+	void render_stopwatch(SDL_Renderer*);
 	void render_texture(SDL_Renderer*);
 	void center_val();
 
@@ -38,10 +39,11 @@ public:
 	bool get_selected() const;
 
 	// colors
-	SDL_Color MOUSEOUTCOLOR = { 255, 255, 255, SDL_ALPHA_OPAQUE }; // purple
-	SDL_Color MOUSEOVERMOTIONCOLOR = { 204, 229, 255, SDL_ALPHA_OPAQUE }; // purple
-	SDL_Color MOUSEDOWNCOLOR = { 102, 178, 255, SDL_ALPHA_OPAQUE }; // purple
-	SDL_Color MOUSEUPCOLOR = { 180, 214, 255, SDL_ALPHA_OPAQUE }; // purple
+	SDL_Color TITLE = { 0,0,0, SDL_ALPHA_OPAQUE };
+	SDL_Color MOUSEOUTCOLOR = { 255, 255, 255, SDL_ALPHA_OPAQUE };
+	SDL_Color MOUSEOVERMOTIONCOLOR = { 204, 229, 255, SDL_ALPHA_OPAQUE };
+	SDL_Color MOUSEDOWNCOLOR = { 102, 178, 255, SDL_ALPHA_OPAQUE };
+	SDL_Color MOUSEUPCOLOR = { 180, 214, 255, SDL_ALPHA_OPAQUE };
 private:
 	bool selected;
 	const char* name;

@@ -27,6 +27,7 @@ const int mGridWidth = 680;
 
 /* font */
 const int FONT_SIZE = 30;
+const int TITLE_FONT_SIZE = 100;
 
 const int GRID_WIDTH = 710;
 
