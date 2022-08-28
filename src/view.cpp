@@ -68,9 +68,6 @@ SDL_Texture** View::get_number_textures()
 
 void View::load_texture(SDL_Texture*& texture, const char* text, SDL_Color& font_color)
 {
-	if (text == "S U D O K U") {
-		cout << "initialized" << endl;
-	}
 	SDL_Surface * text_surface = TTF_RenderText_Solid(_font, text, font_color);
 	CHECKFORERROR(text_surface == NULL, SDL_GetError());
 
@@ -115,7 +112,6 @@ void View::prepare_game_texture(vector<unique_ptr<Button>>& g_buttons)
 	// load results texture
 	for (int i = 0; i < 3; i++) {
 		load_texture(result_texture[i], outcomes[i], color_black);
-
 	}
 }
 
@@ -181,12 +177,15 @@ void View::prepare_game_buttons(int& row, int& col, int& b_width, int& b_height,
 	b_width = WIDTH - GRID_WIDTH - THICK_B;
 	row += THICK_B + 235;
 
-	for (int i = 0; i < buttons.size(); i++) {
+	for (int i = 0; i < buttons.size() - 1; i++) {
 		SDL_Rect rect = { col, row + i * 96, b_width, b_height };
 		buttons[i]->set_button_rect(rect);
 	}
-}
 
+	//menu button
+	SDL_Rect rect = { col, THICK_B, b_width, b_height };
+	buttons[5]->set_button_rect(rect);
+}
 
 void View::prepare_menu_buttons(vector<unique_ptr<Button>>& buttons)
 {
@@ -222,7 +221,6 @@ void View::prepare_complexity_buttons(vector<unique_ptr<Button>>& buttons)
 		buttons[i]->set_button_rect(rect);
 	}
 }
-
 
 void View::load_cell_texture(Cell& cell, int val)
 {

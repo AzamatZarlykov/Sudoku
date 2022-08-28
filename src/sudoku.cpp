@@ -16,7 +16,7 @@ Sudoku::Sudoku() : current_timer(0)
 void Sudoku::initialize_buttons()
 {
 	// game buttons
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 6; i++) {
 		game_buttons.push_back(make_unique<Button>(game_button_names[i]));
 	}
 	// menu buttons
@@ -88,6 +88,9 @@ void Sudoku::check_buttons_selection(const SDL_Event* event)
 				}
 				else if (game_buttons[i]->get_name() == "Solve") {
 					bool_game_buttons[4] = true;
+				}
+				else if (game_buttons[i]->get_name() == "Menu") {
+					bool_game_buttons[5] = true;
 				}
 			}
 		}
@@ -176,7 +179,6 @@ void Sudoku::handle_check_button(bool& check_pressed, time_t& check_time)
 			}
 			else {
 				view->display_message(game_buttons[0], 1);
-
 			}
 		}
 		else {
@@ -195,10 +197,7 @@ void Sudoku::repopulate_grid(vector<vector<Cell>>& new_grid)
 			int val = new_grid[row][col].get_number();
 			grid[row][col].set_noneditable_square(val);
 			// this cell is a non-editable cell
-			if (val != 0) {
-				grid[row][col].set_editable(false);
-			}
-			else {
+			if (val == 0) {
 				grid[row][col].unset();
 				grid[row][col].set_solution(new_grid[row][col].get_solution());
 			}
@@ -207,11 +206,10 @@ void Sudoku::repopulate_grid(vector<vector<Cell>>& new_grid)
 	}
 }
 
-void Sudoku::handle_next_button(bool& next_b)
+void Sudoku::handle_next_button(bool next_game)
 {
 	// reset the timer
 	view->reset_finish_time();
-
 	// new grid to store
 	vector<vector<Cell>> new_grid;
 	initialize_grid(new_grid);
@@ -219,20 +217,20 @@ void Sudoku::handle_next_button(bool& next_b)
 	generator->generate(level, new_grid);
 
 	// remove previous selected 
-	grid[selected.y][selected.x].set_selected(false);
+	if (next_game) {
+		grid[selected.y][selected.x].set_selected(false);
+	}
 	// store the new grid to a grid
 	repopulate_grid(new_grid);
 	// find new selected cell
 	set_selected_cell();
-
-	cout << "New generated grid: " << endl;
-	print_grid();
-
 	// reset timer
 	time(&current_timer);
-
 	// reset the texture in the Check Button
 	view->set_default_texture(game_buttons[0], 0);
+	// display newly generated grid
+	cout << "New generated grid: " << endl;
+	print_grid();
 }
 
 void Sudoku::handle_solve_button()
@@ -241,7 +239,7 @@ void Sudoku::handle_solve_button()
 	for (int row = 0; row < SIZE; row++) {
 		for (int col = 0; col < SIZE; col++) {
 			// reveal the solutions for the cells
-			if (grid[row][col].get_number() == 0) {
+			if (grid[row][col].get_editable()) {
 				grid[row][col].set_number(grid[row][col].get_solution());
 				view->load_cell_texture(grid[row][col], grid[row][col].get_number());
 			}
@@ -277,26 +275,44 @@ void Sudoku::handle_save_button(bool& saved_pressed, time_t& saved_time)
 	}
 }
 
+void Sudoku::handle_menu_button()
+{
+	gs = GameState::MENU;
+	// reset the grid
+	initialize_grid(grid);
+
+	view->create_menu_interface_layout(menu_buttons);
+}
+
 void Sudoku::handle_load_button()
 {
-	cout << "Loaded" << endl;
+	// new grid to store loaded grid
+	vector<vector<Cell>> new_grid;
+	initialize_grid(new_grid);
 	// load the grid and time
-	if (!reader->read(grid, current_timer)) {
+	if (!reader->read(new_grid, current_timer)) {
 		cout << "could not load the file" << endl;
 		exit(1);
 	}
-	print_grid();
+	// unselect the previous selected grid
+	grid[selected.y][selected.x].set_selected(false);
+	// store the new grid to a grid
+	repopulate_grid(new_grid);
 	// choose the first free selected cell
 	set_selected_cell();
+	// create game interface layout
+	view->create_game_interface_layout(grid, game_buttons);
 	// change the gamestate
 	gs = GameState::GAME;
+	// print loaded grid
+	cout << "Loaded" << endl;
+	print_grid();
 }
 
 void Sudoku::handle_start_button()
 {
 	gs = GameState::COMPLEXITY;
 	view->create_complexity_interface_layout(complexity_buttons);
-
 }
 
 void Sudoku::handle_buttons_selection(bool& check_pressed, bool& saved_pressed,
@@ -319,13 +335,18 @@ void Sudoku::handle_buttons_selection(bool& check_pressed, bool& saved_pressed,
 	}
 	// Next
 	else if (bool_game_buttons[3]) {
-		handle_next_button(bool_game_buttons[3]);
+		handle_next_button(true);
 		bool_game_buttons[3] = false;
 	}
 	// Solve
 	else if (bool_game_buttons[4]) {
 		handle_solve_button();
 		bool_game_buttons[4] = false;
+	}
+	// Menu 
+	else if (bool_game_buttons[5]) {
+		handle_menu_button();
+		bool_game_buttons[5] = false;
 	}
 	// Start
 	else if (bool_menu_buttons[0]) {
@@ -351,10 +372,15 @@ void Sudoku::handle_buttons_selection(bool& check_pressed, bool& saved_pressed,
 	}
 	
 	if (bool_complexity_buttons[0] || bool_complexity_buttons[1] || bool_complexity_buttons[2]) {
-		generator->generate(level, grid);
+		
+		handle_next_button(false);
+		// create game interface layout
+		view->create_game_interface_layout(grid, game_buttons);
 		bool_complexity_buttons[0] = false;
 		bool_complexity_buttons[1] = false;
 		bool_complexity_buttons[2] = false;
+		gs = GameState::GAME;
+
 	}
 }
 
@@ -396,8 +422,6 @@ int Sudoku::play()
 		// handle button presses
 		handle_buttons_selection(check_pressed, saved_pressed, check_time, saved_time);
 		if (gs == GameState::GAME) {
-			// create game interface layout
-			view->create_game_interface_layout(grid, game_buttons);
 			view->render_game(grid, game_buttons, current_timer);
 		}
 		else if (gs == GameState::MENU) {

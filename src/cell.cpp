@@ -24,6 +24,7 @@ void Cell::set_noneditable_square(const int val)
 {
 	number = val;
 	solution = val;
+	isEditable = false;
 
 	MOUSEOUTCOLOR = { 160, 160, 160, SDL_ALPHA_OPAQUE }; // purple
 	MOUSEOVERMOTIONCOLOR = { 160, 160, 160, SDL_ALPHA_OPAQUE }; // purple
@@ -77,7 +78,6 @@ void Cell::handle_keyboard_event(const SDL_Event* event, SDL_Texture* num_textur
 	// Handle text input
 	else if (event->type == SDL_TEXTINPUT)
 	{
-		cout << atoi(event->text.text) << endl;
 		// Check if integer > 0
 		if (atoi(event->text.text))
 		{

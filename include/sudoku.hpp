@@ -44,14 +44,14 @@ private:
 	unique_ptr<Reader> reader;
 
 	bool any_button_pressed = false;
-	bool bool_game_buttons[5] = { false, false, false, false, false };
+	bool bool_game_buttons[6] = { false, false, false, false, false, false };
 	bool bool_menu_buttons[2] = { false, false };
 	bool bool_complexity_buttons[3] = { false, false, false };
 
 	vector<unique_ptr<Button>> game_buttons;
 	vector<unique_ptr<Button>> menu_buttons;
 	vector<unique_ptr<Button>> complexity_buttons;
-	const char* game_button_names[5] = { "Check", "Hint", "Save", "Next", "Solve" };
+	const char* game_button_names[6] = { "Check", "Hint", "Save", "Next", "Solve", "Menu"};
 	const char* menu_button_names[2] = { "Start", "Load" };
 	const char* complexity_names[3] = { "Easy", "Medium","Difficult" };
 
@@ -66,10 +66,11 @@ private:
 	void set_selected_cell();
 
 	void handle_check_button(bool&, time_t&);
-	void handle_next_button(bool&);
+	void handle_next_button(bool next_grid);
 	void handle_solve_button();
 	void handle_hint_button();
 	void handle_save_button(bool&, time_t&);
+	void handle_menu_button();
 	void handle_load_button();
 	void handle_start_button();
 
