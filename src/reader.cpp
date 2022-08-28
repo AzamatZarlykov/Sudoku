@@ -30,32 +30,28 @@ bool Reader::is_white_space(const string& line) const {
 	return true;
 }
 
-bool Reader::is_editable(const string& word) const
+bool Reader::check_char(const string& word, char ch) const
 {
-	if (word.find('-') != std::string::npos)
+	if (word.find(ch) != std::string::npos)
 		return true;
 	else
 		return false;
 }
 
-void Reader::store_line(vector<vector<Cell>>& grid, time_t& timer, string& line, int& row, int& col)
+void Reader::store_line(vector<vector<Cell>>& grid, string& line, int& row, int& col)
 {
 	string word;
 	stringstream ss(line);
 
 	while (ss >> word) {
-		if (is_editable(word)) {
+		if (check_char(word, '-')) {
 			grid[row][col].set_number(word[0] - '0');
 			grid[row][col].set_solution(word[2] - '0');
 			grid[row][col].set_editable(true);
 		}
 		else {
-			if (stoi(word) > 9) {
-				continue;
-			}
 			grid[row][col].set_noneditable_square(stoi(word));
 		}
-
 		col++;
 	}
 	col = 0;
@@ -81,7 +77,24 @@ bool Reader::read(vector<vector<Cell>>& grid, time_t& timer)
 		}
 
 		line = trim(line);
-		store_line(grid, timer, line, row, col);
+
+		// recognize time
+		if (check_char(line, ':')) {
+
+			timer = time(0);
+			struct tm lt = {0};
+
+			istringstream ss(line);
+			ss >> get_time(&lt, "%H:%M:%S"); // or just %T in this case
+			ss.imbue(std::locale("de_DE.utf-8"));
+			cout << "READ: " << lt.tm_hour << ":" << lt.tm_min << ":" << lt.tm_sec << endl;
+			timer = mktime(&lt);
+			cout << "WO: " << timer << endl;
+		}
+		// recognize grid
+		else {
+			store_line(grid, line, row, col);
+		}
 		row++;
 	}
 	return true;

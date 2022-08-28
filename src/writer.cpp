@@ -5,6 +5,25 @@ Writer::Writer()
 
 }
 
+void Writer::record_time(time_t& current_time, fstream& file)
+{
+	cout << "WO: " << current_time << endl;
+
+	time_t difference = time(NULL) - current_time;
+
+	tm formatted_time;
+	localtime_s(&formatted_time, &difference);
+
+	if (formatted_time.tm_hour != 0) {
+		formatted_time.tm_hour = 0;
+	}
+
+	char buf[80];
+	strftime(buf, sizeof(buf), "%H:%M:%S", &formatted_time);
+	file << buf << endl;
+
+}
+
 void Writer::write(vector<vector<Cell>>& grid, time_t& time)
 {
 	fstream file;
@@ -26,7 +45,9 @@ void Writer::write(vector<vector<Cell>>& grid, time_t& time)
 		}
 		file << endl;
 	}
+	// write time to the file 
+	record_time(time, file);
 
-	// close the opened file.
+ 	// close the opened file.
 	file.close();
 }

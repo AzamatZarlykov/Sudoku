@@ -278,10 +278,17 @@ void Sudoku::handle_save_button(bool& saved_pressed, time_t& saved_time)
 void Sudoku::handle_menu_button()
 {
 	gs = GameState::MENU;
-	// reset the grid
-	initialize_grid(grid);
+	// remove selected
+	grid[selected.y][selected.x].set_selected(false);
+	// restart the current time
+	time(&current_timer);
 
 	view->create_menu_interface_layout(menu_buttons);
+}
+
+bool Sudoku::is_selected_set() const
+{
+	return selected.x != -1 && selected.y != -1;
 }
 
 void Sudoku::handle_load_button()
@@ -294,8 +301,12 @@ void Sudoku::handle_load_button()
 		cout << "could not load the file" << endl;
 		exit(1);
 	}
-	// unselect the previous selected grid
-	grid[selected.y][selected.x].set_selected(false);
+
+	if (is_selected_set()) {
+		// unselect the previous selected grid
+		grid[selected.y][selected.x].set_selected(false);
+	}
+
 	// store the new grid to a grid
 	repopulate_grid(new_grid);
 	// choose the first free selected cell
@@ -315,12 +326,12 @@ void Sudoku::handle_start_button()
 	view->create_complexity_interface_layout(complexity_buttons);
 }
 
-void Sudoku::handle_buttons_selection(bool& check_pressed, bool& saved_pressed,
+void Sudoku::handle_buttons_selection(bool& button_press,
 	time_t& check_time, time_t& saved_time)
 {
 	// Check
 	if (bool_game_buttons[0]) {
-		handle_check_button(check_pressed, check_time);
+		handle_check_button(button_press, check_time);
 		bool_game_buttons[0] = false;
 	}
 	// Hint
@@ -330,7 +341,7 @@ void Sudoku::handle_buttons_selection(bool& check_pressed, bool& saved_pressed,
 	}
 	// Save
 	else if (bool_game_buttons[2]) {
-		handle_save_button(saved_pressed, saved_time);
+		handle_save_button(button_press, saved_time);
 		bool_game_buttons[2] = false;
 	}
 	// Next
@@ -396,8 +407,7 @@ int Sudoku::play()
 	SDL_Event event;
 
 	bool load_b = false;
-	bool check_pressed = false;
-	bool saved_pressed = false;
+	bool button_press = false;
 
 	time(&current_timer);	// when user presses start the game reset the clock to 0
 	bool game_running = true;
@@ -420,7 +430,7 @@ int Sudoku::play()
 			}
 		}
 		// handle button presses
-		handle_buttons_selection(check_pressed, saved_pressed, check_time, saved_time);
+		handle_buttons_selection(button_press, check_time, saved_time);
 		if (gs == GameState::GAME) {
 			view->render_game(grid, game_buttons, current_timer);
 		}

@@ -58,9 +58,10 @@ private:
 	void initialize_buttons();
 
 	bool check_grid(bool&) const;
+	bool is_selected_set() const;
 	void initialize_grid(vector<vector<Cell>>&);
 
-	void handle_buttons_selection(bool&, bool&, time_t&, time_t&);
+	void handle_buttons_selection(bool&, time_t&, time_t&);
 	void check_buttons_selection(const SDL_Event*);
 	void check_cell_selection(const SDL_Event*);
 	void set_selected_cell();
