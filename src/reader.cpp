@@ -86,10 +86,8 @@ bool Reader::read(vector<vector<Cell>>& grid, time_t& timer)
 
 			istringstream ss(line);
 			ss >> get_time(&lt, "%H:%M:%S"); // or just %T in this case
-			ss.imbue(std::locale("de_DE.utf-8"));
-			cout << "READ: " << lt.tm_hour << ":" << lt.tm_min << ":" << lt.tm_sec << endl;
+			cout << "READ TIME: " << lt.tm_hour << ":" << lt.tm_min << ":" << lt.tm_sec << endl;
 			timer = mktime(&lt);
-			cout << "WO: " << timer << endl;
 		}
 		// recognize grid
 		else {

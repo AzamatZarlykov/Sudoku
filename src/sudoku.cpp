@@ -215,7 +215,6 @@ void Sudoku::handle_next_button(bool next_game)
 	initialize_grid(new_grid);
 	// generate new puzzle
 	generator->generate(level, new_grid);
-
 	// remove previous selected 
 	if (next_game) {
 		grid[selected.y][selected.x].set_selected(false);
