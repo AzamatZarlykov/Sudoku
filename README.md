@@ -34,6 +34,9 @@ and buttons
 * Next - to display the next grid (same complexity level)
 * Solve - to display solved puzzle
 
+**To write the numbers in the particular cell, select the cell you desire and 
+write with a keyboard the numbers from 1-9.**
+
 ## How to Run
 
 ### Prerequisites:
