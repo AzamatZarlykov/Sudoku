@@ -50,7 +50,7 @@ private:
 	SDL_Texture* game_buttons_texture[6];
 	SDL_Texture* menu_buttons_texture[2];
 	SDL_Texture* complexity_buttons_texture[3];
-	SDL_Texture* result_texture[3];
+	SDL_Texture* result_texture[4];
 
 	// Stopwatch
 	Button timer;

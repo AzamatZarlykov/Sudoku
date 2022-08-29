@@ -7,8 +7,6 @@ Writer::Writer()
 
 void Writer::record_time(time_t& current_time, fstream& file)
 {
-	cout << "WO: " << current_time << endl;
-
 	time_t difference = time(NULL) - current_time;
 
 	tm formatted_time;

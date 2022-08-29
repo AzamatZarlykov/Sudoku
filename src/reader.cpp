@@ -67,7 +67,7 @@ bool Reader::read(vector<vector<Cell>>& grid, time_t& timer)
 
 	file.open(path, fstream::in);
 
-	if (!file.is_open()) {
+	if (!file) {
 		return false;
 	}
 

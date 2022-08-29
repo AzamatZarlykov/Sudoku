@@ -61,7 +61,7 @@ private:
 	bool is_selected_set() const;
 	void initialize_grid(vector<vector<Cell>>&);
 
-	void handle_buttons_selection(bool&, time_t&, time_t&);
+	void handle_buttons_selection(bool&, time_t&, time_t&, time_t&);
 	void check_buttons_selection(const SDL_Event*);
 	void check_cell_selection(const SDL_Event*);
 	void set_selected_cell();
@@ -72,7 +72,7 @@ private:
 	void handle_hint_button();
 	void handle_save_button(bool&, time_t&);
 	void handle_menu_button();
-	void handle_load_button();
+	void handle_load_button(bool&, time_t&);
 	void handle_start_button();
 
 	void repopulate_grid(vector<vector<Cell>>&);

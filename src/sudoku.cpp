@@ -290,33 +290,46 @@ bool Sudoku::is_selected_set() const
 	return selected.x != -1 && selected.y != -1;
 }
 
-void Sudoku::handle_load_button()
+void Sudoku::handle_load_button(bool& load_press, time_t& load_time)
 {
+	load_press = true;
+	time(&load_time);
 	// new grid to store loaded grid
 	vector<vector<Cell>> new_grid;
 	initialize_grid(new_grid);
 	// load the grid and time
 	if (!reader->read(new_grid, current_timer)) {
-		cout << "could not load the file" << endl;
-		exit(1);
+		// display "No Saved File"
+		if (load_press) {
+			if (difftime(time(NULL), load_time) < DISPLAY_TIME) {
+				view->display_message(menu_buttons[1], 3);
+			}
+			else {
+				load_press = false;
+			}
+		}
+		else {
+			view->set_default_texture(menu_buttons[1], 1);
+		}
 	}
+	else {
+		if (is_selected_set()) {
+			// unselect the previous selected grid
+			grid[selected.y][selected.x].set_selected(false);
+		}
 
-	if (is_selected_set()) {
-		// unselect the previous selected grid
-		grid[selected.y][selected.x].set_selected(false);
+		// store the new grid to a grid
+		repopulate_grid(new_grid);
+		// choose the first free selected cell
+		set_selected_cell();
+		// create game interface layout
+		view->create_game_interface_layout(grid, game_buttons);
+		// change the gamestate
+		gs = GameState::GAME;
+		// print loaded grid
+		cout << "Loaded" << endl;
+		print_grid();
 	}
-
-	// store the new grid to a grid
-	repopulate_grid(new_grid);
-	// choose the first free selected cell
-	set_selected_cell();
-	// create game interface layout
-	view->create_game_interface_layout(grid, game_buttons);
-	// change the gamestate
-	gs = GameState::GAME;
-	// print loaded grid
-	cout << "Loaded" << endl;
-	print_grid();
 }
 
 void Sudoku::handle_start_button()
@@ -326,7 +339,7 @@ void Sudoku::handle_start_button()
 }
 
 void Sudoku::handle_buttons_selection(bool& button_press,
-	time_t& check_time, time_t& saved_time)
+	time_t& check_time, time_t& saved_time, time_t& load_time)
 {
 	// Check
 	if (bool_game_buttons[0]) {
@@ -365,7 +378,7 @@ void Sudoku::handle_buttons_selection(bool& button_press,
 	}
 	// Load
 	else if (bool_menu_buttons[1]) {
-		handle_load_button();
+		handle_load_button(button_press, load_time);
 		bool_menu_buttons[1] = false;
 	}
 	// Easy
@@ -401,6 +414,7 @@ int Sudoku::play()
 
 	time_t check_time = 0;
 	time_t saved_time = 0;
+	time_t load_time = 0;
 	// Enable text input
 	SDL_StartTextInput();
 	SDL_Event event;
@@ -429,7 +443,7 @@ int Sudoku::play()
 			}
 		}
 		// handle button presses
-		handle_buttons_selection(button_press, check_time, saved_time);
+		handle_buttons_selection(button_press, check_time, saved_time, load_time);
 		if (gs == GameState::GAME) {
 			view->render_game(grid, game_buttons, current_timer);
 		}

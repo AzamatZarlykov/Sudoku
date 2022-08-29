@@ -83,6 +83,13 @@ void View::prepare_menu_texture(vector<unique_ptr<Button>>& buttons)
 	for (int i = 0; i < buttons.size(); i++) {
 		load_texture(menu_buttons_texture[i], buttons[i]->get_name(), color_black);
 	}
+
+
+	const char* outcomes[4] = { "Correct!", "Wrong!", "Saved!", "No saved games!" };
+	// load results texture
+	for (int i = 0; i < 4; i++) {
+		load_texture(result_texture[i], outcomes[i], color_black);
+	}
 }
 
 void View::prepare_complexity_texture(vector<unique_ptr<Button>>& c_buttons)
@@ -106,12 +113,6 @@ void View::prepare_game_texture(vector<unique_ptr<Button>>& g_buttons)
 	// load textures for game buttons
 	for (int i = 0; i < g_buttons.size(); i++) {
 		load_texture(game_buttons_texture[i], g_buttons[i]->get_name(), color_black);
-	}
-
-	const char* outcomes[3] = {"Correct!", "Wrong!", "Saved!"};
-	// load results texture
-	for (int i = 0; i < 3; i++) {
-		load_texture(result_texture[i], outcomes[i], color_black);
 	}
 }
 
@@ -355,8 +356,13 @@ void View::display_message(unique_ptr<Button>& button, int message)
 
 void View::set_default_texture(unique_ptr<Button>& button, int texture)
 {
-	// Set texture to "Check"
-	button->set_texture(game_buttons_texture[texture]);
+	if (texture != 1) {
+		// Set texture to "Check"
+		button->set_texture(game_buttons_texture[texture]);
+	}
+	else {
+		button->set_texture(menu_buttons_texture[texture]);
+	}
 
 	// Set render colour to black
 	SDL_SetRenderDrawColor(_renderer, color_black.r, color_black.g, color_black.b, color_black.a);
