@@ -259,6 +259,8 @@ void Sudoku::handle_save_button(bool& saved_pressed, time_t& saved_time)
 	saved_pressed = true;
 
 	writer->write(grid, current_timer);
+
+	cout << "Saved" << endl;
 	
 	time(&saved_time);
 	if (saved_pressed) {
@@ -281,7 +283,7 @@ void Sudoku::handle_menu_button()
 	grid[selected.y][selected.x].set_selected(false);
 	// restart the current time
 	time(&current_timer);
-
+	view->reset_finish_time();
 	view->create_menu_interface_layout(menu_buttons);
 }
 
