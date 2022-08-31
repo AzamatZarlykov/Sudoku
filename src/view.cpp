@@ -15,22 +15,25 @@ View::View()
 
 	/* initialize window and renderer */
 	SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, SDL_WINDOW_OPENGL | SDL_RENDERER_PRESENTVSYNC, &_window, &_renderer);	
-	CHECKFORERROR(_window == NULL, SDL_GetError());
-	CHECKFORERROR(_renderer == NULL, SDL_GetError());
+	CHECKFORERROR(_window == nullptr, SDL_GetError());
+	CHECKFORERROR(_renderer == nullptr, SDL_GetError());
 
 	/* initialize font for title*/
 	CHECKFORERROR(TTF_Init() == -1, TTF_GetError());
 	_font = TTF_OpenFont("./font/font.ttf", TITLE_FONT_SIZE);
-	CHECKFORERROR(_font == NULL, TTF_GetError());
+	CHECKFORERROR(_font == nullptr, TTF_GetError());
 
 	load_texture(title_texture, title_text, color_white);
 
 	/* initialize default font*/
 	CHECKFORERROR(TTF_Init() == -1, TTF_GetError());
 	_font = TTF_OpenFont("./font/font.ttf", FONT_SIZE);
-	CHECKFORERROR(_font == NULL, TTF_GetError());
+	CHECKFORERROR(_font == nullptr, TTF_GetError());
 
 	SDL_SetWindowTitle(_window, "Sudoku");
+
+	timer = make_unique<Button>();
+	title = make_unique<Button>();
 }
 
 View::~View()
@@ -52,6 +55,30 @@ View::~View()
 			num_texture[i] = nullptr;
 		}
 	}
+	
+	if (title_texture != nullptr) {
+		SDL_DestroyTexture(title_texture);
+		title_texture = nullptr;
+	}
+
+	for (int i = 0; i < 4; i++) {
+		if (i < 3) {
+			if (i < 2) {
+				if (menu_buttons_texture[i] != nullptr) {
+					SDL_DestroyTexture(menu_buttons_texture[i]);
+					menu_buttons_texture[i] = nullptr;
+				}
+			}
+			if (complexity_buttons_texture[i] != nullptr) {
+				SDL_DestroyTexture(complexity_buttons_texture[i]);
+				complexity_buttons_texture[i] = nullptr;
+			}
+		}
+		if (result_texture[i] != nullptr) {
+			SDL_DestroyTexture(result_texture[i]);
+			result_texture[i] = nullptr;
+		}
+	}
 
 	// Free font
 	TTF_CloseFont(_font);
@@ -69,10 +96,10 @@ SDL_Texture** View::get_number_textures()
 void View::load_texture(SDL_Texture*& texture, const char* text, SDL_Color& font_color)
 {
 	SDL_Surface * text_surface = TTF_RenderText_Solid(_font, text, font_color);
-	CHECKFORERROR(text_surface == NULL, SDL_GetError());
+	CHECKFORERROR(text_surface == nullptr, SDL_GetError());
 
 	texture = SDL_CreateTextureFromSurface(_renderer, text_surface);
-	CHECKFORERROR(texture == NULL, SDL_GetError());
+	CHECKFORERROR(texture == nullptr, SDL_GetError());
 
 	SDL_FreeSurface(text_surface);
 }
@@ -127,7 +154,7 @@ void View::prepare_stopwatch(int& row, int& col, int& b_width,
 	col += THICK_B;
 
 	SDL_Rect button = { row, col, b_width, b_height };
-	timer.set_button_rect(button);
+	timer->set_button_rect(button);
 }
 
 
@@ -279,7 +306,7 @@ void View::render_grid(vector<vector<Cell>>& grid)
 void View::render_stopwatch(time_t& start_timer)
 {
 	time_t difference = 0;
-	difference = time(NULL) - start_timer;
+	difference = time(nullptr) - start_timer;
 	
 	tm formatted_time;
 	if (finish_time != 0) {
@@ -299,10 +326,10 @@ void View::render_stopwatch(time_t& start_timer)
 	SDL_Texture* timer_texture = nullptr;
 	load_texture(timer_texture, t, color_black);
 
-	timer.set_texture(timer_texture);
-	timer.render_button(_renderer);
-	timer.center_val();
-	timer.render_texture(_renderer);
+	timer->set_texture(timer_texture);
+	timer->render_button(_renderer);
+	timer->center_val();
+	timer->render_texture(_renderer);
 
 	SDL_DestroyTexture(timer_texture);
 	timer_texture = nullptr;
@@ -380,7 +407,7 @@ void View::reset_finish_time()
 
 void View::set_finish_time(time_t& start_timer)
 {
-	finish_time = time(NULL) - start_timer;
+	finish_time = time(nullptr) - start_timer;
 }
 
 void View::reset_button_textures(vector<unique_ptr<Button>>& buttons)
@@ -397,12 +424,12 @@ void View::render_title()
 	int b_width = GRID_WIDTH;
 
 	SDL_Rect rect = { WIDTH / 2 - b_width / 2, HEIGHT / 6, b_width, HEIGHT / 4 };
-	title.set_button_rect(rect);
+	title->set_button_rect(rect);
 
-	title.set_texture(title_texture);
-	title.render_stopwatch(_renderer);
-	title.center_val();
-	title.render_texture(_renderer);
+	title->set_texture(title_texture);
+	title->render_stopwatch(_renderer);
+	title->center_val();
+	title->render_texture(_renderer);
 }
 
 void View::render_menu(vector<unique_ptr<Button>>& buttons)

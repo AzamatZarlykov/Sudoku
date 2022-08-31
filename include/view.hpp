@@ -52,9 +52,8 @@ private:
 	SDL_Texture* complexity_buttons_texture[3];
 	SDL_Texture* result_texture[4];
 
-	// Stopwatch
-	Button timer;
-	Button title;
+	unique_ptr<Button> timer;
+	unique_ptr<Button> title;
 
 	time_t finish_time;
 

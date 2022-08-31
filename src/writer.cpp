@@ -7,7 +7,7 @@ Writer::Writer()
 
 void Writer::record_time(time_t& current_time, fstream& file)
 {
-	time_t difference = time(NULL) - current_time;
+	time_t difference = time(nullptr) - current_time;
 
 	tm formatted_time;
 	localtime_s(&formatted_time, &difference);
@@ -16,10 +16,9 @@ void Writer::record_time(time_t& current_time, fstream& file)
 		formatted_time.tm_hour = 0;
 	}
 
-	char buf[80];
-	strftime(buf, sizeof(buf), "%H:%M:%S", &formatted_time);
-	file << buf << endl;
+	file << put_time(&formatted_time, "%T") << endl;
 
+	//file << formatted_time.tm_hour * 3600 + formatted_time.tm_min * 60 + formatted_time.tm_sec << endl;
 }
 
 void Writer::write(vector<vector<Cell>>& grid, time_t& time)

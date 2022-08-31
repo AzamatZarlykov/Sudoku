@@ -21,7 +21,7 @@ class Button {
 public:
 	Button();
 	Button(const char* name);
-	// setters
+
 	void set_texture(SDL_Texture*);
 	void set_button_rect(const SDL_Rect&);
 	void set_texture_rect(const SDL_Rect&);
@@ -38,7 +38,7 @@ public:
 	const char* get_name() const;
 	bool get_selected() const;
 
-	// colors
+	// default colors
 	SDL_Color TITLE = { 0,0,0, SDL_ALPHA_OPAQUE };
 	SDL_Color MOUSEOUTCOLOR = { 255, 255, 255, SDL_ALPHA_OPAQUE };
 	SDL_Color MOUSEOVERMOTIONCOLOR = { 204, 229, 255, SDL_ALPHA_OPAQUE };

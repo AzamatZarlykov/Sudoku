@@ -26,10 +26,11 @@ void Cell::set_noneditable_square(const int val)
 	solution = val;
 	isEditable = false;
 
-	MOUSEOUTCOLOR = { 160, 160, 160, SDL_ALPHA_OPAQUE }; // purple
-	MOUSEOVERMOTIONCOLOR = { 160, 160, 160, SDL_ALPHA_OPAQUE }; // purple
-	MOUSEDOWNCOLOR = { 160, 160, 160, SDL_ALPHA_OPAQUE }; // purple
-	MOUSEUPCOLOR = { 160, 160, 160, SDL_ALPHA_OPAQUE }; // purple
+	// not editables have all grey
+	MOUSEOUTCOLOR = { 160, 160, 160, SDL_ALPHA_OPAQUE };
+	MOUSEOVERMOTIONCOLOR = { 160, 160, 160, SDL_ALPHA_OPAQUE };
+	MOUSEDOWNCOLOR = { 160, 160, 160, SDL_ALPHA_OPAQUE };
+	MOUSEUPCOLOR = { 160, 160, 160, SDL_ALPHA_OPAQUE };
 }
 
 void Cell::unset() 
@@ -69,22 +70,18 @@ void Cell::handle_keyboard_event(const SDL_Event* event, SDL_Texture* num_textur
 	// Handle backspace
 	if (event->key.keysym.sym == SDLK_BACKSPACE && number != ' ')
 	{
-		// Empty char
 		number = ' ';
 
-		// Set empty texture
 		set_texture(num_texture[0]);
 	}
 	// Handle text input
 	else if (event->type == SDL_TEXTINPUT)
 	{
-		// Check if integer > 0
+		// numbers only
 		if (atoi(event->text.text))
 		{
-			// Replace char
 			number = * (event->text.text) - '0';
 
-			// Set character based on number
 			set_texture(num_texture[atoi(event->text.text)]);
 		}
 	}

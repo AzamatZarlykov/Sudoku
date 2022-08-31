@@ -453,7 +453,6 @@ int Sudoku::play()
 		else {
 			view->render_complexity(complexity_buttons);
 		}
-		// Slow down program becuase it doesn't need to run very fast
 		SDL_Delay(10);
 	}
 	return 0;

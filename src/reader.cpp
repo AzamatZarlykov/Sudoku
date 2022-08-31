@@ -80,14 +80,26 @@ bool Reader::read(vector<vector<Cell>>& grid, time_t& timer)
 
 		// recognize time
 		if (check_char(line, ':')) {
-
-			timer = time(0);
-			struct tm lt = {0};
+			tm tm;
 
 			istringstream ss(line);
-			ss >> get_time(&lt, "%H:%M:%S"); // or just %T in this case
-			cout << "READ TIME: " << lt.tm_hour << ":" << lt.tm_min << ":" << lt.tm_sec << endl;
-			timer = mktime(&lt);
+
+			ss >> get_time(&tm, "%T");
+			timer = mktime(&tm);
+
+			//istringstream in{ line };
+			//// system_clock::time_point tp;
+			//tm time{};
+			//in >> get_time(&time, "%T");
+
+			//tm time{};
+			//istringstream ss(line);
+			//ss >> get_time(&time, "%T");
+			//time.tm_year -= 1900;
+			//time.tm_mon -= 1; // valid range 0 to 11, not 1 to 12
+			//timer = _mkgmtime(&time);
+
+			// cout << "READ TIME: " << time.tm_hour << ":" << time.tm_min << ":" << time.tm_sec << endl;
 		}
 		// recognize grid
 		else {

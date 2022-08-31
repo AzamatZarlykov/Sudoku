@@ -78,7 +78,6 @@ void Button::render_button(SDL_Renderer* _renderer)
 		);
 	}
 	else {
-		// Show current button State
 		switch (current_state)
 		{
 		case ButtonState::BUTTON_MOUSE_OUT:
@@ -108,7 +107,6 @@ void Button::render_stopwatch(SDL_Renderer* _renderer)
 
 void Button::render_texture(SDL_Renderer* _renderer)
 {
-	// Set rendering space
 	SDL_RenderCopy(_renderer, texture, nullptr, &texture_rect);
 }
 
@@ -127,22 +125,21 @@ bool Button::inside_button(const int x, const int y) const
 
 ButtonState Button::identify_mouse_event(const SDL_Event* event) 
 {
-	//If mouse event happened
+	// check if mouse event is triggered
 	if (any_mouse_actions(event))
 	{
 		// Get mouse position
 		int x, y;
 		SDL_GetMouseState(&x, &y);
 
-		// Mouse is outside button
+		// mouse pos is not on the button
 		if (!inside_button(x, y))
 		{
 			current_state = ButtonState::BUTTON_MOUSE_OUT;
 		}
-		// Mouse is inside button
+		// mouse pos is on the button
 		else
 		{
-			// Set mouse over State
 			switch (event->type)
 			{
 			case SDL_MOUSEMOTION:
