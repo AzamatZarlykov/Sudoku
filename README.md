@@ -18,7 +18,7 @@ The following are the key features of the project:
 Here are some screenshots of the Sudoku gameplay:
 
 ![Screenshot 1](/img/menu_levels.png)
-This screenshot shows the main menu of the Sudoku game on the left. It includes the `'Start'` and `'Load'` buttons. On the left side, it is the window which appears after starting the game where the player can select the difficulty level.
+This screenshot shows the main menu of the Sudoku game on the left. It includes the `'Start'` and `'Load'` buttons. On the right side, it is the window which appears after starting the game where the player can select the difficulty level.
 
 ![Screenshot 2](/img/gameplay_load.png)
 This screenshot shows the gameplay once the difficulty is selected, left image, and the loaded game, right image. 
