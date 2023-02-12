@@ -365,4 +365,4 @@ FodyWeavers.xsd
 # SDL libraries
 *.dll
 
-/img
+img/
