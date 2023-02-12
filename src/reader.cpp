@@ -57,6 +57,21 @@ void Reader::store_line(vector<vector<Cell>>& grid, string& line, int& row, int&
 	col = 0;
 }
 
+void print_tm(tm& dt)
+{
+	cout << "#####" << endl;
+	cout << "YDAY: " << dt.tm_yday << endl;
+	cout << "WDAY: " << dt.tm_wday << endl;
+	cout << "year: " << dt.tm_year << endl;
+	cout << "MON: " << dt.tm_mon << endl;
+	cout << "MDAY: " << dt.tm_mday << endl;
+	cout << "HOUR: " << dt.tm_hour << endl;
+	cout << "MIN: " << dt.tm_min << endl;
+	cout << "SEC: " << dt.tm_sec << endl;
+	cout << "ISDST: " << dt.tm_isdst << endl;
+}
+
+
 bool Reader::read(vector<vector<Cell>>& grid, time_t& timer)
 {
 	int row = 0;
@@ -80,26 +95,29 @@ bool Reader::read(vector<vector<Cell>>& grid, time_t& timer)
 
 		// recognize time
 		if (check_char(line, ':')) {
-			tm tm;
 
-			istringstream ss(line);
 
-			ss >> get_time(&tm, "%T");
-			timer = mktime(&tm);
+			// store the saved time to tm struct
+			tm tm_r = { 0 };
+			time_t t;
 
-			//istringstream in{ line };
-			//// system_clock::time_point tp;
-			//tm time{};
-			//in >> get_time(&time, "%T");
+			tm_r.tm_hour = 1;
+			tm_r.tm_mon = 1;
+			tm_r.tm_year = 2000 - 1970;
+			tm_r.tm_mday = 1;
+			tm_r.tm_sec = 1;
+			tm_r.tm_yday = 1;
+			tm_r.tm_isdst = 1;
+			tm_r.tm_min = 1;
+			tm_r.tm_wday = 1;
 
-			//tm time{};
-			//istringstream ss(line);
-			//ss >> get_time(&time, "%T");
-			//time.tm_year -= 1900;
-			//time.tm_mon -= 1; // valid range 0 to 11, not 1 to 12
-			//timer = _mkgmtime(&time);
+			t = time(nullptr);
 
-			// cout << "READ TIME: " << time.tm_hour << ":" << time.tm_min << ":" << time.tm_sec << endl;
+			print_tm(tm_r);
+
+
+
+			timer = mktime(&tm_r);
 		}
 		// recognize grid
 		else {
@@ -109,3 +127,22 @@ bool Reader::read(vector<vector<Cell>>& grid, time_t& timer)
 	}
 	return true;
 }
+/*
+tm tm_r = { 0 };
+time_t t;
+t = time(nullptr);
+localtime_s(&tm_r, &t);
+
+print_tm(tm_r);
+
+istringstream ss(line);
+tm holder = { 0 };
+ss >> get_time(&holder, "%T");
+
+tm_r.tm_isdst = 0;
+tm_r.tm_sec = holder.tm_sec;
+print_tm(tm_r);
+
+timer = mktime(&tm_r);
+
+*/

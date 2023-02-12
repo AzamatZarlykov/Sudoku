@@ -1,52 +1,48 @@
 # Sudoku
-Recreating the famous logic-based, combinatorial number-placement puzzle.
+Recreating the famous logic-based, combinatorial number-placement puzzle - Sudoku.
 
-## User's Guide
+## Features
 
-### Rules
+The following are the key features of the project:
 
-The game contains the same standard rules:
+* Multiple levels of difficulty: Users can choose from different levels: Easy, Middle, Difficult
+* Timer: The game includes a timer to track the time taken to solve the puzzle, allowing users to keep track of their progress.
+* Solution checker: Users can check their solution against the correct answer and receive feedback on their progress.
+* Hints: The game provides the option to get a hint for the selected square if the user is stuck.
+* Save and Load: Users can save their current puzzle and continue playing at a later time, or load a previously saved puzzle.
+* Next puzzle: The game also provides the option to move to the next puzzle.
+* Solve puzzle: If the user is struggling, they can opt to have the puzzle solved for them.
 
-* Each row must contain the numbers from 1 to 9, without repetition
-* Each column must contain the numbers from 1 to 9, without repetition
-* The digits can only occur once per block (nonet)
+## Gameplay
 
-### Gameplay
+Here are some screenshots of the Sudoku gameplay:
 
-Once the game started, the window displays the **Menu** where 
-the user has an option to START or LOAD the game.
+![Screenshot 1](/img/menu_levels.png)
+This screenshot shows the main menu of the Sudoku game on the left. It includes the `'Start'` and `'Load'` buttons. On the left side, it is the window which appears after starting the game where the player can select the difficulty level.
 
-* **MENU**
-    * START - moves the screen to **Complexity** screen
-    * LOAD - loads the previously saved game
-* **COMPLEXITY**
-    * EASY - prepares an easy level puzzle
-    * MEDIUM - prepares a medium level puzzle
-    * DIFFICULT - prepares a difficult level puzzle
-    
-After the level is selected, the program displays the **game** screen with a grid 
-and buttons
+![Screenshot 2](/img/gameplay_load.png)
+This screenshot shows the gameplay once the difficulty is selected, left image, and the loaded game, right image. 
 
-* Menu - to go back to menu
-* Check - to check if the puzzle is solved correctly
-* Hint - to reveal a solution of the selected cell
-* Save - to save the game
-* Next - to display the next grid (same complexity level)
-* Solve - to display solved puzzle
+## Technologies
 
-**To write the numbers in the particular cell, select the cell you desire and 
-write with a keyboard the numbers from 1-9.**
+1. C++ programming language
+2. [Visual Studio (2019+)](https://visualstudio.microsoft.com/)
+3. [SDL (2.0.22+)](https://github.com/libsdl-org/SDL/releases/tag/release-2.24.0)
+4. [SDL_ttf (2.20.1](https://github.com/libsdl-org/SDL_ttf)
 
-## How to Run
-
-### Prerequisites:
-
-1. [Visual Studio (2019+)](https://visualstudio.microsoft.com/)
-2. [SDL (2.0.22+)](https://github.com/libsdl-org/SDL/releases/tag/release-2.24.0)
-3. [SDL_ttf (2.20.1](https://github.com/libsdl-org/SDL_ttf)
-
-### Setup
+## Setup
 
 1. Clone the repository
-2. Configure SDL and SDL_ttf libraries to your Visual Studio
-3. Run the program
+```bash
+git clone https://github.com/AzamatZarlykov/Sudoku.git
+```
+2. Configure SDL and SDL_ttf libraries to your Visual Studio:
+* In Visual Studio, go to Project Properties > Linker > Input > Additional Dependencies and add the following:
+    * SDL2.lib
+    * SDL2main.lib
+    * SDL2_ttf.lib
+* In Project Properties > C/C++ > Additional Include Directories, add the include directories for SDL and SDL_ttf
+3. Run the application in Visual Studio
+    * Open the solution file sudoku.sln in Visual Studio
+    * Select the build configuration (Debug or Release) and target architecture (x86 or x64)
+    * Press the Start button to run the application

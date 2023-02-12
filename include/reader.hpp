@@ -7,8 +7,13 @@
 #include <chrono>
 #include <ctime>
 #include <locale.h>
-
+#include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "cell.hpp"
+
+using std::chrono::system_clock;
+using std::chrono::steady_clock;
 
 class Reader {
 public:

@@ -321,7 +321,7 @@ void View::render_stopwatch(time_t& start_timer)
 	}
 	
 	char t[80];
-	strftime(t, sizeof(t), "%H:%M:%S", &formatted_time);
+	strftime(t, sizeof(t), "%T", &formatted_time);
 
 	SDL_Texture* timer_texture = nullptr;
 	load_texture(timer_texture, t, color_black);
